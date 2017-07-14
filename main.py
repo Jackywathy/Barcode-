@@ -14,7 +14,7 @@ class MyApp(wx.Frame):
 
         # create menu Item + quit item
         file_menu = wx.Menu()
-        quit_item = file_menu.Append(wx.ID_EXIT, "Quit", "Quit Appication")
+        quit_item = file_menu.Append(wx.ID_EXIT, 'Quit', 'Quit application')
         self.Bind(wx.EVT_MENU, self.on_quit_handler, quit_item)
 
         # add menu items to menu bar
