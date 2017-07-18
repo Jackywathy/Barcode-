@@ -9,10 +9,8 @@ from inspect import signature
 
 class BaseTable:
     """Base class for tables"""
+    table_creation_msg = "Creating neeww {} table"
     table_name = NotImplemented
-    def create_table(self):
-        """Creates empty table """
-        raise NotImplementedError
 
     @user_accessable
     @requires_level(PERMS_READ_USERS)
@@ -34,7 +32,7 @@ class BaseTable:
         if not self.cursor.execute("select 1 from sqlite_master WHERE type='table' and name='{}'".
                                             format(self.table_name)).fetchone():
             # users table does not exist, create the table
-            print("Creating new {} table".format(self.table_name))
+            print(self.table_creation_msg.format(self.table_name))
             self.create_table()
 
     def create_test_data(self):
@@ -162,7 +160,7 @@ class ProductTable(BaseTable):
 
 
 class Database:
-    """Holds all tables for all data used by this application"""
+    """Holds all tables for all data used by this application. It is advised to run """
     tables = "users", "products"
     def __init__(self, file_path, create_if_empty=True, overwrite=False):
         """
@@ -191,7 +189,6 @@ class Database:
 
 
         self.cursor = self.connection.cursor()
-
         self.user_table = UsersTable(self.connection)
         self.product_table = ProductTable(self.connection)
 
@@ -312,6 +309,15 @@ class Database:
                 count += 1
             else:
                 ui = input(">>> ")
+
+    def __del__(self):
+        try:
+            self.connection.close()
+        except sqlite3.ProgrammingError:
+            pass
+
+    def execute(self, command, parameters=()):
+        return self.connection.execute(command, parameters)
 
 
 
